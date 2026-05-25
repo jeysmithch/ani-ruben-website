@@ -374,6 +374,64 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ----- FREE WORKSHEETS MODAL -----
+  var worksheetsLink = document.getElementById('worksheetsLink');
+  var worksheetsModal = document.getElementById('worksheetsModal');
+  if (worksheetsLink && worksheetsModal) {
+    var worksheetsCloseBtn = worksheetsModal.querySelector('.worksheets-modal__close');
+    var worksheetsReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var worksheetsCloseTimer = null;
+
+    function finishWorksheetsClose() {
+      worksheetsModal.hidden = true;
+    }
+
+    function openWorksheetsModal() {
+      if (worksheetsCloseTimer) {
+        clearTimeout(worksheetsCloseTimer);
+        worksheetsCloseTimer = null;
+      }
+      worksheetsModal.hidden = false;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          worksheetsModal.classList.add('is-open');
+        });
+      });
+      document.body.classList.add('worksheets-modal-open');
+      if (worksheetsCloseBtn) worksheetsCloseBtn.focus();
+    }
+
+    function closeWorksheetsModal() {
+      worksheetsModal.classList.remove('is-open');
+      document.body.classList.remove('worksheets-modal-open');
+      if (worksheetsReducedMotion) {
+        finishWorksheetsClose();
+        return;
+      }
+      worksheetsCloseTimer = window.setTimeout(finishWorksheetsClose, 320);
+    }
+
+    worksheetsModal.addEventListener('transitionend', function (e) {
+      if (e.target !== worksheetsModal || e.propertyName !== 'opacity') return;
+      if (!worksheetsModal.classList.contains('is-open')) {
+        if (worksheetsCloseTimer) {
+          clearTimeout(worksheetsCloseTimer);
+          worksheetsCloseTimer = null;
+        }
+        finishWorksheetsClose();
+      }
+    });
+
+    worksheetsLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      openWorksheetsModal();
+    });
+
+    worksheetsModal.querySelectorAll('[data-worksheets-close]').forEach(function (el) {
+      el.addEventListener('click', closeWorksheetsModal);
+    });
+  }
+
 });
 
 // ----- GLOBAL FUNCTIONS -----
@@ -470,7 +528,7 @@ function closeMobile() {
     if (!href) return;
 
     if (href === '#') {
-      if (anchor.id === 'resourcesParentsLink') return;
+      if (anchor.id === 'resourcesParentsLink' || anchor.id === 'worksheetsLink') return;
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
       clearUrlHash();
@@ -480,6 +538,10 @@ function closeMobile() {
 
     var id = href.slice(1);
     if (!id) return;
+    if (id === 'worksheets' && anchor.id === 'worksheetsLink') {
+      e.preventDefault();
+      return;
+    }
     if (!document.getElementById(id)) return;
 
     e.preventDefault();
