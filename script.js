@@ -69,10 +69,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ----- NAVBAR SCROLL -----
   var navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', function () {
-    if (window.scrollY > 50) navbar.classList.add('scrolled');
-    else navbar.classList.remove('scrolled');
-  });
+  if (navbar) {
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    });
+  }
 
   // ----- MOBILE MENU -----
   var hamburger = document.getElementById('hamburger');
@@ -307,11 +309,10 @@ document.addEventListener('DOMContentLoaded', function () {
       var top = section.offsetTop;
       var height = section.offsetHeight;
       var id = section.getAttribute('id');
-      var link = document.querySelector('.nav-links a[href="#' + id + '"]');
-      if (link) {
+      document.querySelectorAll('.nav-links a[href="#' + id + '"]').forEach(function (link) {
         if (scrollY >= top && scrollY < top + height) link.classList.add('active');
         else link.classList.remove('active');
-      }
+      });
     });
   });
 
@@ -375,6 +376,78 @@ function closeMobile() {
   if (m) { m.classList.remove('active'); document.body.style.overflow = ''; }
   if (h) { h.setAttribute('aria-expanded', 'false'); }
 }
+
+// ----- IN-PAGE NAV (smooth scroll, clean URL) — runs independently of other init -----
+(function () {
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function getCleanUrl() {
+    return window.location.pathname + window.location.search;
+  }
+
+  function clearUrlHash() {
+    try {
+      history.replaceState(null, document.title, getCleanUrl());
+    } catch (err) {
+      /* file:// or other contexts where the History API is restricted */
+    }
+  }
+
+  function scrollToSection(id) {
+    var el = document.getElementById(id);
+    if (!el) return false;
+    el.scrollIntoView({
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+      block: 'start'
+    });
+    return true;
+  }
+
+  document.addEventListener('click', function (e) {
+    var anchor = e.target.closest('a[href^="#"]');
+    if (!anchor || anchor.target === '_blank') return;
+    var href = anchor.getAttribute('href');
+    if (!href) return;
+
+    if (href === '#') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+      clearUrlHash();
+      closeMobile();
+      return;
+    }
+
+    var id = href.slice(1);
+    if (!id) return;
+    if (!document.getElementById(id)) return;
+
+    e.preventDefault();
+    scrollToSection(id);
+    clearUrlHash();
+    closeMobile();
+  });
+
+  function handleInitialHash() {
+    if (!window.location.hash) return;
+    var hashId = window.location.hash.slice(1);
+    if (!document.getElementById(hashId)) {
+      clearUrlHash();
+      return;
+    }
+    requestAnimationFrame(function () {
+      scrollToSection(hashId);
+      clearUrlHash();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', handleInitialHash);
+  } else {
+    handleInitialHash();
+  }
+})();
 
 /* Typewriter Effect */
 document.addEventListener('DOMContentLoaded', function () {
