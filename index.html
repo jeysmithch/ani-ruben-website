@@ -560,10 +560,8 @@
       </div>
       <div class="footer-col">
         <h4>Resources</h4>
-        <a href="#">Resources for Parents</a>
+        <a href="#" id="resourcesParentsLink">Resources for Parents</a>
         <a href="#">Free Worksheets</a>
-        <a href="#">Armenian Culture</a>
-        <a href="#">FAQ</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -588,6 +586,57 @@
     </div>
   </div>
 </footer>
+
+<div class="resources-modal" id="resourcesModal" role="dialog" aria-modal="true" aria-labelledby="resourcesModalTitle" hidden>
+  <div class="resources-modal__backdrop" data-resources-close aria-hidden="true"></div>
+  <div class="resources-modal__panel">
+    <button type="button" class="resources-modal__close" data-resources-close aria-label="Close resources dialog">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h2 class="resources-modal__title" id="resourcesModalTitle">Resources for Parents</h2>
+    <p class="resources-modal__intro">Hand-picked sites to support your child’s Armenian learning at home.</p>
+
+    <section class="resources-modal__category">
+      <h3 class="resources-modal__category-title">🎮 For Kids</h3>
+      <ul class="resources-modal__list">
+        <li class="resources-modal__item">
+          <a href="https://gusonthego.com" class="resources-modal__link" target="_blank" rel="noopener">
+            <span class="resources-modal__name">Gus on the Go</span>
+            <span class="resources-modal__domain">gusonthego.com</span>
+          </a>
+          <p class="resources-modal__desc">Fun Armenian vocabulary app for kids</p>
+        </li>
+        <li class="resources-modal__item">
+          <a href="https://avc-agbu.org" class="resources-modal__link" target="_blank" rel="noopener">
+            <span class="resources-modal__name">AGBU Armenian Virtual College</span>
+            <span class="resources-modal__domain">avc-agbu.org</span>
+          </a>
+          <p class="resources-modal__desc">Online Armenian courses for all ages</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="resources-modal__category">
+      <h3 class="resources-modal__category-title">🏛️ Cultural &amp; Learning</h3>
+      <ul class="resources-modal__list">
+        <li class="resources-modal__item">
+          <a href="https://agbu.org/resources" class="resources-modal__link" target="_blank" rel="noopener">
+            <span class="resources-modal__name">AGBU Resources</span>
+            <span class="resources-modal__domain">agbu.org/resources</span>
+          </a>
+          <p class="resources-modal__desc">Free videos, ebooks and courses</p>
+        </li>
+        <li class="resources-modal__item">
+          <a href="https://armeniapedia.org" class="resources-modal__link" target="_blank" rel="noopener">
+            <span class="resources-modal__name">Armeniapedia</span>
+            <span class="resources-modal__domain">armeniapedia.org</span>
+          </a>
+          <p class="resources-modal__desc">Armenian encyclopedia in English</p>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>
 
 <script src="script.js"></script>
 <script src="https://www.google.com/recaptcha/api.js?render=6LezL_gsAAAAAJd-Uca7Mu9m6iHuHl7Hy9E9JAV8" async></script>

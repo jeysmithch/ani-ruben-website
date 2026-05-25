@@ -316,6 +316,64 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // ----- RESOURCES FOR PARENTS MODAL -----
+  var resourcesLink = document.getElementById('resourcesParentsLink');
+  var resourcesModal = document.getElementById('resourcesModal');
+  if (resourcesLink && resourcesModal) {
+    var resourcesCloseBtn = resourcesModal.querySelector('.resources-modal__close');
+    var resourcesReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var resourcesCloseTimer = null;
+
+    function finishResourcesClose() {
+      resourcesModal.hidden = true;
+    }
+
+    function openResourcesModal() {
+      if (resourcesCloseTimer) {
+        clearTimeout(resourcesCloseTimer);
+        resourcesCloseTimer = null;
+      }
+      resourcesModal.hidden = false;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          resourcesModal.classList.add('is-open');
+        });
+      });
+      document.body.classList.add('resources-modal-open');
+      if (resourcesCloseBtn) resourcesCloseBtn.focus();
+    }
+
+    function closeResourcesModal() {
+      resourcesModal.classList.remove('is-open');
+      document.body.classList.remove('resources-modal-open');
+      if (resourcesReducedMotion) {
+        finishResourcesClose();
+        return;
+      }
+      resourcesCloseTimer = window.setTimeout(finishResourcesClose, 320);
+    }
+
+    resourcesModal.addEventListener('transitionend', function (e) {
+      if (e.target !== resourcesModal || e.propertyName !== 'opacity') return;
+      if (!resourcesModal.classList.contains('is-open')) {
+        if (resourcesCloseTimer) {
+          clearTimeout(resourcesCloseTimer);
+          resourcesCloseTimer = null;
+        }
+        finishResourcesClose();
+      }
+    });
+
+    resourcesLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      openResourcesModal();
+    });
+
+    resourcesModal.querySelectorAll('[data-resources-close]').forEach(function (el) {
+      el.addEventListener('click', closeResourcesModal);
+    });
+  }
+
 });
 
 // ----- GLOBAL FUNCTIONS -----
@@ -412,6 +470,7 @@ function closeMobile() {
     if (!href) return;
 
     if (href === '#') {
+      if (anchor.id === 'resourcesParentsLink') return;
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
       clearUrlHash();
